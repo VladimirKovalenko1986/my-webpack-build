@@ -4,10 +4,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    second: './src/second.js',
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'my-webpack.bundle.js',
+    filename: '[name].bundle.js',
   },
   module: {
     rules: [
@@ -29,6 +32,17 @@ module.exports = {
         ],
       },
       {
+        test: /\.(png|jpg|gif|svg)$/i,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192,
+            },
+          },
+        ],
+      },
+      {
         test: /\.js$/,
         exclude: /node_modules/,
         use: ['babel-loader'],
@@ -36,7 +50,16 @@ module.exports = {
     ],
   },
   plugins: [
-    new HtmlWebpackPlugin({ template: 'src/index.html' }),
+    new HtmlWebpackPlugin({
+      template: 'src/index.html',
+      filename: 'index.html',
+      chunks: ['main'],
+    }),
+    new HtmlWebpackPlugin({
+      template: 'src/second.html',
+      filename: 'second.html',
+      chunks: ['second'],
+    }),
     new MiniCssExtractPlugin(),
     new CleanWebpackPlugin(),
   ],
